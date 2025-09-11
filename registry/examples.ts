@@ -42,6 +42,16 @@ export const hooksExamples: Registry["items"] = [
     ],
   },
   {
+    name: "use-prevent-zoom-demo",
+    type: "registry:example",
+    files: [
+      {
+        path: "registry/examples/use-prevent-zoom-demo.tsx",
+        type: "registry:example",
+      },
+    ],
+  },
+  {
     name: "use-mouse-position-demo",
     type: "registry:example",
     files: [
