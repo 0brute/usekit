@@ -44,14 +44,8 @@ const images = [
 ]
 
 export default function UsePreventZoomDemo() {
-  const {
-    disableGlobal,
-    enableGlobal,
-    isGlobalDisabled,
-    disableForElement,
-    enableForElement,
-    toggleGlobal,
-  } = usePreventZoom({ global: true }) // Start with global zoom disabled
+  const { disableGlobal, enableGlobal, isGlobalDisabled, toggleGlobal } =
+    usePreventZoom({ global: true })
 
   const modalRef = useRef<HTMLDivElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
@@ -80,6 +74,7 @@ export default function UsePreventZoomDemo() {
   const toggleModalZoom = () => {
     const newState = !modalZoomEnabled
     setModalZoomEnabled(newState)
+
     if (newState) {
       if (modalRef.current) {
         const handleMouseEnter = () => enableZoomForSection(true)
@@ -105,6 +100,7 @@ export default function UsePreventZoomDemo() {
   const toggleGalleryZoom = () => {
     const newState = !galleryZoomEnabled
     setGalleryZoomEnabled(newState)
+
     if (newState) {
       if (galleryRef.current) {
         const handleMouseEnter = () => enableZoomForSection(true)
@@ -136,6 +132,7 @@ export default function UsePreventZoomDemo() {
   const toggleTextEditorZoom = () => {
     const newState = !textEditorZoomEnabled
     setTextEditorZoomEnabled(newState)
+
     if (newState) {
       if (textEditorRef.current) {
         const handleMouseEnter = () => enableZoomForSection(true)
@@ -366,7 +363,9 @@ export default function UsePreventZoomDemo() {
                   alt={i.alt}
                   width={400}
                   height={400}
-                  className="aspect-square rounded-lg border"
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
+                  className="aspect-square select-none rounded-lg border"
                 />
               ))}
             </div>
