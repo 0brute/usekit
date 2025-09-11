@@ -1,6 +1,6 @@
 ---
 title: usePreventZoom
-description: Prevent zooming on touch devices with usePreventZoom, providing options for scroll, keyboard, and pinch prevention.
+description: Prevent zooming on touch devices with usePreventZoom, providing global and element-specific zoom control with advanced features.
 ---
 
 ## Installation
@@ -36,7 +36,13 @@ npx shadcn@latest add https://usekit.kiron.dev/k/use-prevent-zoom
 
 </CodeTabs>
 
+## Demo
+
+<ComponentPreview name="use-prevent-zoom-demo" />
+
 ## Usage
+
+### Basic Usage
 
 ```tsx {3, 6}
 "use client"
@@ -44,8 +50,225 @@ npx shadcn@latest add https://usekit.kiron.dev/k/use-prevent-zoom
 import { usePreventZoom } from "@/hooks/use-prevent-zoom"
 
 const App = () => {
-  usePreventZoom() // Prevents keyboard, scroll and pinch zooming
+  const { disableGlobal, enableGlobal, isGlobalDisabled } = usePreventZoom()
 
-  return <div>Your App</div>
+  return (
+    <div>
+      <p>Zoom is globally {isGlobalDisabled ? "disabled" : "enabled"}</p>
+      <button onClick={disableGlobal}>Disable Zoom</button>
+      <button onClick={enableGlobal}>Enable Zoom</button>
+    </div>
+  )
 }
 ```
+
+### Global Zoom Control
+
+```tsx {3, 6-8}
+"use client"
+
+import { usePreventZoom } from "@/hooks/use-prevent-zoom"
+
+const App = () => {
+  const { disableGlobal, enableGlobal, isGlobalDisabled, toggleGlobal } =
+    usePreventZoom({ global: true })
+
+  return (
+    <div>
+      <p>Zoom is globally {isGlobalDisabled ? "disabled" : "enabled"}</p>
+      <button onClick={toggleGlobal}>
+        {isGlobalDisabled ? "Enable" : "Disable"} Zoom
+      </button>
+    </div>
+  )
+}
+```
+
+### Element-Specific Zoom Control
+
+```tsx {3, 6-7, 10-11, 17-25}
+"use client"
+
+import { useRef } from "react"
+
+import { usePreventZoom } from "@/hooks/use-prevent-zoom"
+
+const App = () => {
+  const { disableForElement, enableForElement } = usePreventZoom()
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  const handleDisableSection = () => {
+    if (sectionRef.current) {
+      disableForElement(sectionRef.current)
+    }
+  }
+
+  const handleEnableSection = () => {
+    if (sectionRef.current) {
+      enableForElement(sectionRef.current)
+    }
+  }
+
+  return (
+    <div>
+      <div ref={sectionRef} className="section">
+        <p>This section can have zoom disabled specifically</p>
+        <button onClick={handleDisableSection}>Disable Zoom for Section</button>
+        <button onClick={handleEnableSection}>Enable Zoom for Section</button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Custom Options
+
+```tsx {3, 6-12}
+"use client"
+
+import { usePreventZoom } from "@/hooks/use-prevent-zoom"
+
+const App = () => {
+  const zoomControl = usePreventZoom({
+    scroll: true, // Disable zoom via Ctrl+scroll
+    keyboard: true, // Disable zoom via Ctrl+/- keys
+    pinch: true, // Disable pinch-to-zoom on touch devices
+    global: false, // Don't start with global disable
+  })
+
+  return (
+    <div>
+      <h1>Custom Zoom Control</h1>
+      <button onClick={zoomControl.disableGlobal}>Disable All Zoom</button>
+      <button onClick={zoomControl.enableGlobal}>Enable All Zoom</button>
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### usePreventZoom
+
+```tsx
+usePreventZoom(options?: Options): Return
+```
+
+**Parameters:**
+
+| Name       | Type      | Default | Description                                                |
+| ---------- | --------- | ------- | ---------------------------------------------------------- |
+| `scroll`   | `boolean` | `true`  | Disable zoom via mouse wheel + Ctrl key                    |
+| `keyboard` | `boolean` | `true`  | Disable zoom via keyboard shortcuts (Ctrl +, Ctrl -, etc.) |
+| `pinch`    | `boolean` | `true`  | Disable zoom via pinch gesture on touch devices            |
+| `global`   | `boolean` | `false` | Start with global zoom disabled when hook initializes      |
+
+**Return Value:**
+
+| Name                | Type                                   | Description                                                                |
+| ------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| `disableGlobal`     | `() => void`                           | Function to disable zoom globally across the entire website                |
+| `enableGlobal`      | `() => void`                           | Function to enable zoom globally across the entire website                 |
+| `isGlobalDisabled`  | `boolean`                              | Current state indicating if zoom is disabled globally                      |
+| `disableForElement` | `(element: HTMLElement) => () => void` | Function to disable zoom for a specific element. Returns cleanup function. |
+| `enableForElement`  | `(element: HTMLElement) => void`       | Function to enable zoom for a specific element                             |
+| `toggleGlobal`      | `() => void`                           | Function to toggle the global zoom disabled state                          |
+
+### TypeScript Interfaces
+
+```tsx
+interface Options {
+  scroll?: boolean
+  keyboard?: boolean
+  pinch?: boolean
+  global?: boolean
+}
+
+interface Return {
+  disableGlobal: () => void
+  enableGlobal: () => void
+  isGlobalDisabled: boolean
+  disableForElement: (element: HTMLElement) => () => void
+  enableForElement: (element: HTMLElement) => void
+  toggleGlobal: () => void
+}
+```
+
+## Examples
+
+### Modal with Zoom Disabled
+
+```tsx
+import { useEffect, useRef } from "react"
+
+import { usePreventZoom } from "@/hooks/use-prevent-zoom"
+
+const Modal = () => {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const { disableForElement } = usePreventZoom()
+
+  useEffect(() => {
+    if (modalRef.current) {
+      const cleanup = disableForElement(modalRef.current)
+      return cleanup // Cleanup when modal unmounts
+    }
+  }, [disableForElement])
+
+  return (
+    <div ref={modalRef} className="modal">
+      <h2>Modal Content (Zoom Disabled)</h2>
+      <p>Zoom is disabled within this modal</p>
+    </div>
+  )
+}
+```
+
+### Image Gallery with Selective Zoom Control
+
+```tsx
+import { useRef, useState } from "react"
+
+import { usePreventZoom } from "@/hooks/use-prevent-zoom"
+
+const ImageGallery = () => {
+  const galleryRef = useRef<HTMLDivElement>(null)
+  const [zoomDisabled, setZoomDisabled] = useState(false)
+  const { disableForElement, enableForElement } = usePreventZoom()
+
+  const toggleZoomForGallery = () => {
+    if (galleryRef.current) {
+      if (zoomDisabled) {
+        enableForElement(galleryRef.current)
+      } else {
+        disableForElement(galleryRef.current)
+      }
+      setZoomDisabled(!zoomDisabled)
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={toggleZoomForGallery}>
+        {zoomDisabled ? "Enable" : "Disable"} Zoom for Gallery
+      </button>
+      <div ref={galleryRef} className="image-gallery">
+        <img src="/image1.jpg" alt="Image 1" />
+        <img src="/image2.jpg" alt="Image 2" />
+        <img src="/image3.jpg" alt="Image 3" />
+      </div>
+    </div>
+  )
+}
+```
+
+## Notes
+
+- **Simple API**: Single `usePreventZoom` function with options object and return object
+- **Global Control**: When global zoom is disabled, it affects the entire website
+- **Element-Specific**: Element-specific zoom control only affects interactions within that element
+- **Cleanup**: Element-specific listeners are automatically cleaned up when the component unmounts
+- **Touch Devices**: Pinch-to-zoom prevention works on mobile and tablet devices
+- **Keyboard Shortcuts**: Prevents common zoom shortcuts like Ctrl+Plus, Ctrl+Minus, Ctrl+0, Ctrl+=
+- **Mouse Wheel**: Prevents zoom via Ctrl+scroll wheel combination
+- **Performance**: Uses React callbacks and proper event listener management for optimal performance
+- **TypeScript**: Full TypeScript support with exported `Options` and `Return` interfaces

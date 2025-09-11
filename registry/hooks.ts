@@ -1048,7 +1048,7 @@ export const hooks: Registry["items"] = [
     name: "use-prevent-zoom",
     title: "Use Prevent Zoom",
     description:
-      "Prevent zooming on touch devices with usePreventZoom, providing options for scroll, keyboard, and pinch prevention.",
+      "Prevent zooming on touch devices with usePreventZoom, providing global and element-specific zoom control with advanced features.",
     type: "registry:hook",
     files: [
       {

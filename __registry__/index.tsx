@@ -1218,7 +1218,9 @@ export const Index: Record<string, any> = {
         target: "",
       },
     ],
-    component: React.lazy(() => import("registry/hooks/use-prevent-zoom.ts")),
+    component: React.lazy(
+      () => import("registry/examples/use-prevent-zoom-demo")
+    ),
     source: "",
   },
   "use-portal": {
@@ -1798,6 +1800,22 @@ export const Index: Record<string, any> = {
     ],
     component: React.lazy(
       () => import("registry/examples/use-document-title-demo.tsx")
+    ),
+    source: "",
+  },
+  "use-prevent-zoom-demo": {
+    name: "use-prevent-zoom-demo",
+    type: "registry:example",
+    registryDependencies: undefined,
+    files: [
+      {
+        path: "registry/examples/use-prevent-zoom-demo.tsx",
+        type: "registry:example",
+        target: "",
+      },
+    ],
+    component: React.lazy(
+      () => import("registry/examples/use-prevent-zoom-demo.tsx")
     ),
     source: "",
   },
